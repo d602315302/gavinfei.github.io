@@ -101,7 +101,7 @@
 
     function getNews() {
         isNewsArrive = false;
-        $.get('router.js', {
+        $.get('/getNews', {
             page: pageIndex
         }).done(function(ret) {
             isNewsArrive = true;
