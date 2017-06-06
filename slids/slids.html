@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>懒加载</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        ul,
+        li {
+            list-style: none;
+        }
+        
+        .carousel {
+            width: 800px;
+            height: 400px;
+            margin: 50px auto;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .img-ct:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        
+        .img-ct {
+            width: 3200px;
+            position: absolute;
+            left: 0;
+        }
+        
+        .img-ct>li {
+            float: left;
+        }
+        
+        .img-ct>li>a>img {
+            width: 800px;
+            height: 400px;
+        }
+        
+        .bullet-ct {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+        
+        .bullet {
+            display: inline-block;
+        }
+        
+        .bullet:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        
+        .bullet>li {
+            float: left;
+            margin: 0 10px;
+        }
+        
+        .bullet>li>a>img {
+            width: 100px;
+            height: 50px;
+        }
+        
+        .bullet>li:hover {
+            opacity: 1;
+        }
+        
+        .bullet>li {
+            opacity: 0.5;
+        }
+        
+        .bullet>.active {
+            opacity: 1;
+        }
+        
+        .btn {
+            position: absolute;
+            top: 0;
+            width: 50px;
+            height: 400px;
+            color: #000;
+            background: #ccc;
+            opacity: 0.2;
+            font-size: 30px;
+            font-weight: bold;
+        }
+        
+        .btn-next {
+            right: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carousel">
+        <ul class="img-ct">
+            <li data-img="0">
+                <a href="#"><img src="https://d602315302.github.io/gavinfei.github.io/img/aa.jpg" alt=""></a>
+            </li>
+            <li data-img="1">
+                <a href="#"><img src="https://d602315302.github.io/gavinfei.github.io/img/bb.jpg" alt=""></a>
+            </li>
+            <li data-img="2">
+                <a href="#"><img src="https://d602315302.github.io/gavinfei.github.io/img/cc.jpg" alt=""></a>
+            </li>
+            <li data-img="3">
+                <a href="#"><img src="https://d602315302.github.io/gavinfei.github.io/img/dd.jpg" alt=""></a>
+            </li>
+        </ul>
+
+        <button class="btn btn-pre">&lt;</button>
+        <button class="btn btn-next">&gt;</button>
+
+        <div class="bullet-ct">
+            <ul class="bullet">
+                <li class="active">
+                    <a href="#"><img src="img/aa.jpg" alt=""></a>
+                </li>
+                <li>
+                    <a href="#"><img src="img/bb.jpg" alt=""></a>
+                </li>
+                <li>
+                    <a href="#"><img src="img/cc.jpg" alt=""></a>
+                </li>
+                <li>
+                    <a href="#"><img src="img/dd.jpg" alt=""></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+
+    <script>
+        var $imgCt = $('.img-ct'),
+            $preBtn = $('.btn-pre'),
+            $nextBtn = $('.btn-next'),
+            $bullet = $('.bullet');
+
+        var $firstImg = $imgCt.children('li').first(),
+            $lastImg = $imgCt.children('li').last();
+
+        var pageIndex = 0
+        var imgLength = $imgCt.children().length;
+
+        $imgCt.prepend($lastImg.clone())
+        $imgCt.append($firstImg.clone())
+
+        $imgCt.width($firstImg.width() * $imgCt.children().length)
+        $imgCt.css('left', '-800px')
+
+        var isAnimate = false;
+
+        $preBtn.on('click', function(e) {
+            e.preventDefault()
+            clearInterval(id1)
+            playPre()
+        })
+
+        $nextBtn.on('click', function(e) {
+            e.preventDefault()
+            clearInterval(id1)
+            playNext()
+        })
+        var id1 = setInterval(function() {
+            playNext()
+        }, 3000)
+
+        function playNext() {
+            if (isAnimate) {
+                return
+            };
+            isAnimate = true;
+            $imgCt.animate({
+                left: '-=800'
+            }, function() {
+                pageIndex++
+
+                if (pageIndex === imgLength) {
+                    $imgCt.css('left', '-800px')
+                    pageIndex = 0
+                }
+                isAnimate = false;
+                setBullet();
+            })
+        }
+
+        function playPre() {
+            if (isAnimate) {
+                return
+            };
+            isAnimate = true;
+            $imgCt.animate({
+                left: '+=800'
+            }, function() {
+                pageIndex--;
+                if (pageIndex < 0) {
+                    $imgCt.css('left', '-3200px');
+                    pageIndex = imgLength - 1
+                }
+                isAnimate = false;
+                setBullet();
+            })
+        }
+
+        function setBullet() {
+            $bullet.children()
+                .removeClass('active')
+                .eq(pageIndex)
+                .addClass('active')
+        }
+
+        $('.bullet>li').on('click', function(e) {
+            clearInterval(id1)
+            e.preventDefault();
+            var index = $(this).index();
+            var imgIndex = -(index * 800 + 800)
+            $(this).siblings().removeClass('active')
+            $(this).addClass('active')
+            $imgCt.css('left', imgIndex)
+            pageIndex = index;
+        })
+    </script>
+</body>
+
+</html>
