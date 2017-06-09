@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>瀑布流布局</title>
+    <style>
+        .content {
+            position: relative
+        }
+        
+        .item {
+            position: absolute;
+            width: 200px;
+            margin-right: 10px;
+            margin-top: 10px;
+            transition: all 1s;
+        }
+        
+        .h1 {
+            height: 200px;
+            background-color: #f4b300
+        }
+        
+        .h2 {
+            height: 300px;
+            background-color: #691BB8
+        }
+        
+        .h3 {
+            height: 400px;
+            background-color: #006ac1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <dic class="item h1">3</dic>
+        <dic class="item h3">2</dic>
+        <dic class="item h2">1</dic>
+        <dic class="item h1">4</dic>
+        <dic class="item h1">5</dic>
+        <dic class="item h3">6</dic>
+        <dic class="item h3">7</dic>
+        <dic class="item h2">8</dic>
+        <dic class="item h3">9</dic>
+        <dic class="item h2">10</dic>
+        <dic class="item h1">11</dic>
+        <dic class="item h1">12</dic>
+        <dic class="item h2">13</dic>
+        <dic class="item h3">14</dic>
+        <dic class="item h3">15</dic>
+        <dic class="item h1">16</dic>
+        <dic class="item h2">17</dic>
+        <dic class="item h1">18</dic>
+        <dic class="item h2">19</dic>
+        <dic class="item h3">20</dic>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        //创建一个函数 waterfull() ，将瀑布流布局效果放入函数内
+
+        waterfull() //开始时执行一次waterfull()，形成瀑布流布局效果
+        $(window).resize(function() { //当页面大小发生改变时再次执行waterfull()，瀑布流会更具页面大小改变
+            waterfull()
+        })
+
+        function waterfull() {
+            var colLength = parseInt($('.content').width() / $('.item').width()) //总内容的宽度除以单个内容宽度，得到总内容可以容下几数列的内容
+            var itemArr = [] //创建新数组
+            for (var i = 0; i < colLength; i++) { //初始化数组中的值为0
+                itemArr[i] = 0
+            }
+            $('.item').each(function() {
+                var minValue = Math.min.apply(null, itemArr) //得到数组中的最小值
+                var minIndex = itemArr.indexOf(minValue) //找到数组中最小值的下标志
+
+                $(this).css({
+                    top: itemArr[minIndex], //改变位置，第一排的top都是0
+                    left: $(this).outerWidth(true) * minIndex //left=Item的宽度（包括变宽，因为有true）乘以最小值下标数。
+                })
+                itemArr[minIndex] += $(this).outerHeight(true) //
+            })
+        }
+    </script>
+</body>
+
+</html>
